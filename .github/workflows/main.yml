@@ -1,0 +1,41 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      # Step 1: Get code from GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      # Step 3: Install PyInstaller
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      # Step 4: Build Windows .exe with debug logs
+      - name: Build executable
+        run: pyinstaller --onefile --windowed --icon=icon.ico MyPasswordGenerator.py3 --log-level=DEBUG
+
+      # Step 5: Check dist folder
+      - name: List dist folder
+        run: dir dist
+
+      # Step 6: Upload artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-App
+          path: dist/MyPasswordGenerator.exe
